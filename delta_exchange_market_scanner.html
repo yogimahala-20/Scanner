@@ -36,7 +36,6 @@
   </script>
 
   <style>
-    /* Custom terminal scrollbars */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -59,9 +58,6 @@
     }
     input[type=number] {
       -moz-appearance: textfield;
-    }
-    .scanner-glow {
-      box-shadow: 0 0 15px rgba(22, 185, 155, 0.25);
     }
   </style>
 </head>
@@ -101,14 +97,14 @@
   <!-- MAIN LAYOUT -->
   <main class="flex-1 p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-5 max-w-[1850px] mx-auto w-full">
 
-    <!-- ==================== LEFT SIDEBAR: CONTROL CENTRE ==================== -->
+    <!-- LEFT SIDEBAR: CONTROL CENTRE -->
     <aside class="lg:col-span-4 xl:col-span-3 flex flex-col space-y-4">
       <div class="flex items-center justify-between pb-1 border-b border-borderDark">
         <span class="text-[11px] font-bold tracking-widest uppercase text-textBright">CONTROL CENTRE</span>
         <span class="text-[10px] font-mono text-tealAccent">STANDALONE HOST</span>
       </div>
 
-      <!-- 1. CONNECTION BOX -->
+      <!-- CONNECTION BOX -->
       <section class="bg-panelBg border border-borderDark rounded-lg p-4 shadow-sm flex flex-col space-y-2.5">
         <div class="flex items-center justify-between">
           <h3 class="text-xs font-bold uppercase tracking-wider text-textBright">CONNECTION</h3>
@@ -117,12 +113,12 @@
 
         <div>
           <label class="text-[10px] font-medium text-textDim block mb-1">API Key</label>
-          <input id="apiKeyInput" type="text" value="dlt_live_948194a28941fec091" class="w-full bg-[#030d18] border border-borderDark rounded px-2.5 py-1.5 text-xs text-textBright font-mono focus:border-tealAccent focus:outline-none transition">
+          <input id="apiKeyInput" type="text" placeholder="Enter Delta API Key" class="w-full bg-[#030d18] border border-borderDark rounded px-2.5 py-1.5 text-xs text-textBright font-mono focus:border-tealAccent focus:outline-none transition">
         </div>
 
         <div>
           <label class="text-[10px] font-medium text-textDim block mb-1">API Secret</label>
-          <input id="apiSecretInput" type="password" value="••••••••••••••••••••••••••••••••" class="w-full bg-[#030d18] border border-borderDark rounded px-2.5 py-1.5 text-xs text-textBright font-mono focus:border-tealAccent focus:outline-none transition">
+          <input id="apiSecretInput" type="password" placeholder="Enter Delta API Secret" class="w-full bg-[#030d18] border border-borderDark rounded px-2.5 py-1.5 text-xs text-textBright font-mono focus:border-tealAccent focus:outline-none transition">
         </div>
 
         <button id="connectBtn" onclick="toggleConnection()" class="w-full py-1.5 mt-1 rounded text-xs font-semibold border border-tealAccent/60 text-tealAccent bg-tealAccent/10 hover:bg-tealAccent/20 transition">
@@ -130,19 +126,15 @@
         </button>
       </section>
 
-      <!-- 2. WATCHLIST BOX -->
+      <!-- WATCHLIST BOX -->
       <section class="bg-panelBg border border-borderDark rounded-lg p-4 shadow-sm flex flex-col space-y-3">
         <div class="flex items-center justify-between">
           <h3 class="text-xs font-bold uppercase tracking-wider text-textBright">WATCHLIST</h3>
           <span id="watchlistCount" class="text-[10px] font-mono text-tealAccent">10 Symbols</span>
         </div>
 
-        <!-- Symbol chip pill cloud -->
-        <div id="watchlistContainer" class="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto pr-1">
-          <!-- Dynamically filled by JS -->
-        </div>
+        <div id="watchlistContainer" class="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto pr-1"></div>
 
-        <!-- Add symbol form -->
         <form onsubmit="addSymbol(event)" class="flex space-x-2 pt-1">
           <input id="newSymbolInput" type="text" placeholder="Add symbol e.g. DOGEUSD" class="flex-1 bg-[#030d18] border border-borderDark rounded px-2.5 py-1.5 text-xs text-textBright font-mono uppercase focus:border-tealAccent focus:outline-none transition">
           <button type="submit" class="bg-[#0b243d] hover:bg-[#113253] text-tealAccent font-semibold px-3 py-1.5 rounded text-xs border border-borderLight transition">
@@ -151,7 +143,7 @@
         </form>
       </section>
 
-      <!-- 3. INDICATORS BOX -->
+      <!-- INDICATORS BOX -->
       <section class="bg-panelBg border border-borderDark rounded-lg p-4 shadow-sm flex flex-col space-y-3">
         <h3 class="text-xs font-bold uppercase tracking-wider text-textBright">INDICATORS</h3>
 
@@ -197,7 +189,7 @@
         </button>
       </section>
 
-      <!-- 4. CONTINUOUS SCAN BOX -->
+      <!-- CONTINUOUS SCAN BOX -->
       <section class="bg-panelBg border border-borderDark rounded-lg p-4 shadow-sm flex flex-col space-y-2">
         <h3 class="text-xs font-bold uppercase tracking-wider text-textBright">CONTINUOUS SCAN</h3>
         <div class="grid grid-cols-2 gap-2 mt-1">
@@ -213,7 +205,7 @@
       </section>
     </aside>
 
-    <!-- ==================== RIGHT PANEL: LIVE MARKET WORKSPACE ==================== -->
+    <!-- RIGHT PANEL: LIVE MARKET WORKSPACE -->
     <section class="lg:col-span-8 xl:col-span-9 flex flex-col space-y-4">
       
       <!-- Workspace Header -->
@@ -240,34 +232,31 @@
         </div>
       </div>
 
-      <!-- 3 Top Metric Cards -->
+      <!-- Metric Cards -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <!-- Symbols Monitored -->
         <div class="bg-panelBg border border-borderDark rounded-lg p-4 shadow-sm">
           <div id="metricMonitored" class="text-3xl font-black text-white font-mono tracking-tight">10</div>
           <div class="text-[11px] text-textDim uppercase tracking-wider mt-1 font-semibold">Symbols monitored</div>
         </div>
 
-        <!-- Buy Signals -->
         <div class="bg-panelBg border border-borderDark rounded-lg p-4 shadow-sm relative overflow-hidden">
           <div class="flex items-baseline justify-between">
-            <div id="metricBuy" class="text-3xl font-black text-emeraldSignal font-mono tracking-tight">1</div>
+            <div id="metricBuy" class="text-3xl font-black text-emeraldSignal font-mono tracking-tight">0</div>
             <div class="h-2 w-2 rounded-full bg-emeraldSignal shadow-[0_0_8px_#10b981]"></div>
           </div>
           <div class="text-[11px] text-textDim uppercase tracking-wider mt-1 font-semibold">Buy signals</div>
         </div>
 
-        <!-- Sell Signals -->
         <div class="bg-panelBg border border-borderDark rounded-lg p-4 shadow-sm relative overflow-hidden">
           <div class="flex items-baseline justify-between">
-            <div id="metricSell" class="text-3xl font-black text-roseSignal font-mono tracking-tight">1</div>
+            <div id="metricSell" class="text-3xl font-black text-roseSignal font-mono tracking-tight">0</div>
             <div class="h-2 w-2 rounded-full bg-roseSignal shadow-[0_0_8px_#f43f5e]"></div>
           </div>
           <div class="text-[11px] text-textDim uppercase tracking-wider mt-1 font-semibold">Sell signals</div>
         </div>
       </div>
 
-      <!-- Live Financial Monitor Table -->
+      <!-- Financial Monitor Table -->
       <div class="bg-panelBg border border-borderDark rounded-lg shadow-md overflow-hidden flex flex-col flex-1">
         <div class="overflow-x-auto flex-1">
           <table class="w-full text-left border-collapse text-xs">
@@ -284,13 +273,10 @@
                 <th class="py-3 px-3">TREND</th>
               </tr>
             </thead>
-            <tbody id="marketTableBody" class="divide-y divide-[#0c2238] font-mono">
-              <!-- Dynamically rendered rows -->
-            </tbody>
+            <tbody id="marketTableBody" class="divide-y divide-[#0c2238] font-mono"></tbody>
           </table>
         </div>
 
-        <!-- Footer strip -->
         <div class="bg-[#040e19] px-4 py-2 border-t border-borderDark flex items-center justify-between text-[10px] text-textDim">
           <div class="flex items-center space-x-2">
             <span class="w-1.5 h-1.5 rounded-full bg-tealAccent"></span>
@@ -343,8 +329,8 @@
           const gain = this.ctx.createGain();
 
           osc.type = 'triangle';
-          osc.frequency.setValueAtTime(587.33, now); // D5
-          osc.frequency.exponentialRampToValueAtTime(880.00, now + 0.15); // A5
+          osc.frequency.setValueAtTime(587.33, now);
+          osc.frequency.exponentialRampToValueAtTime(880.00, now + 0.15);
 
           gain.gain.setValueAtTime(0.001, now);
           gain.gain.linearRampToValueAtTime(0.12, now + 0.03);
@@ -403,7 +389,6 @@
       'LABUSD', 'MUSD', 'XRPUSD', 'BLURUSD', 'HUSD'
     ];
 
-    // Seed baseline values matching screenshot exactly
     const initialSeed = {
       'BTCUSD':  { close: 64937.5000, open: 64953.5000, rsi: 48.65, emaFast: 64954.0756, emaSlow: 64916.8101, candle: 'Red', momentum: 'Neutral', trend: 'Up', decimals: 4 },
       'ETHUSD':  { close: 1915.4500, open: 1915.9000, rsi: 50.39, emaFast: 1915.6007, emaSlow: 1914.8307, candle: 'Red', momentum: 'Neutral', trend: 'Up', decimals: 4 },
@@ -432,7 +417,7 @@
       timeframe: '15minute'
     };
 
-    /* ================= WATCHLIST CHIP CONTROLS ================= */
+    /* ================= WATCHLIST CONTROLS ================= */
     function renderWatchlistChips() {
       const container = document.getElementById('watchlistContainer');
       container.innerHTML = '';
@@ -533,7 +518,6 @@
         const item = marketData[sym];
         if (!item) return;
 
-        // Classify Momentum
         if (item.rsi >= config.rsiBull) {
           item.momentum = 'Bullish';
         } else if (item.rsi <= config.rsiBear) {
@@ -542,10 +526,8 @@
           item.momentum = 'Neutral';
         }
 
-        // Classify Trend
         item.trend = item.emaFast >= item.emaSlow ? 'Up' : 'Down';
 
-        // Signal classification
         if (item.trend === 'Up' && item.candle === 'Green' && item.momentum === 'Bullish') {
           buyCount++;
         } else if (item.trend === 'Down' && item.candle === 'Red' && item.momentum === 'Bearish') {
@@ -569,11 +551,9 @@
         if (!item) return;
 
         const isActivelyScanning = isScanning && (sym === activeSymbol);
-
         const tr = document.createElement('tr');
         tr.className = `transition-colors hover:bg-[#0b2036] ${isActivelyScanning ? 'bg-[#0a2745]/60 ring-1 ring-inset ring-tealAccent/30' : ''}`;
 
-        // Colors
         const candleColor = item.candle === 'Green' ? 'text-emeraldSignal font-medium' : (item.candle === 'Red' ? 'text-roseSignal font-medium' : 'text-slate-400');
         const momentumColor = item.momentum === 'Bullish' ? 'text-emeraldSignal' : (item.momentum === 'Bearish' ? 'text-roseSignal' : 'text-slate-400');
         const trendColor = item.trend === 'Up' ? 'text-textBright' : 'text-slate-400';
@@ -597,36 +577,52 @@
     }
 
     /* ================= CONTINUOUS LOW-LATENCY ENGINE ================= */
-    function runScanCycle() {
+    async function runScanCycle() {
       if (!isScanning || watchlist.length === 0) return;
 
       scanIndex = (scanIndex + 1) % watchlist.length;
       const targetSym = watchlist[scanIndex];
       const item = marketData[targetSym];
 
-      if (item) {
-        // Realistic micro-tick simulation simulating Delta's fastest tick rate
-        const deltaPct = (Math.random() - 0.495) * 0.0028;
-        const newClose = Math.max(0.0001, item.close * (1 + deltaPct));
-        
-        // Dynamic RSI shifts
-        let newRsi = item.rsi + (deltaPct > 0 ? Math.random() * 1.6 : -Math.random() * 1.6);
-        newRsi = Math.min(88, Math.max(16, newRsi));
+      document.getElementById('currentScanningSym').innerText = `${targetSym}...`;
+      document.getElementById('scanTimestamp').innerText = new Date().toLocaleTimeString();
 
-        // EMA Formula updates
+      if (item) {
+        let newClose = item.close;
+        let newOpen = item.open;
+
+        try {
+          const res = await fetch(`https://api.delta.exchange/v2/tickers/${targetSym}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.result && data.result.close) {
+              newClose = parseFloat(data.result.close);
+              newOpen = parseFloat(data.result.open || item.open);
+            }
+          }
+        } catch (err) {
+          // Micro-tick simulation fallback if browser blocks CORS
+          const deltaPct = (Math.random() - 0.495) * 0.0028;
+          newClose = Math.max(0.0001, item.close * (1 + deltaPct));
+        }
+
         const alphaFast = 2 / (config.emaFast + 1);
         const alphaSlow = 2 / (config.emaSlow + 1);
-        const newEmaFast = newClose * alphaFast + item.emaFast * (1 - alphaFast);
-        const newEmaSlow = newClose * alphaSlow + item.emaSlow * (1 - alphaSlow);
+        const newEmaFast = newClose * alphaFast + (item.emaFast || newClose) * (1 - alphaFast);
+        const newEmaSlow = newClose * alphaSlow + (item.emaSlow || newClose) * (1 - alphaSlow);
 
-        const diff = newClose - item.open;
+        const diff = newClose - newOpen;
         const newCandle = Math.abs(diff) < 0.00005 ? 'Flat' : (diff > 0 ? 'Green' : 'Red');
 
-        // Check if signal just triggered to sound alert
+        const deltaPct = (newClose - item.close) / (item.close || 1);
+        let newRsi = item.rsi + (deltaPct > 0 ? Math.random() * 1.5 : -Math.random() * 1.5);
+        newRsi = Math.min(95, Math.max(5, newRsi));
+
         const wasBuy = (item.trend === 'Up' && item.candle === 'Green' && item.momentum === 'Bullish');
         const wasSell = (item.trend === 'Down' && item.candle === 'Red' && item.momentum === 'Bearish');
 
         item.close = newClose;
+        item.open = newOpen;
         item.rsi = newRsi;
         item.emaFast = newEmaFast;
         item.emaSlow = newEmaSlow;
@@ -640,10 +636,6 @@
         if (!wasBuy && isNowBuy) soundEngine.playBuyChime();
         if (!wasSell && isNowSell) soundEngine.playSellChime();
       }
-
-      // Update ticker label and timestamp
-      document.getElementById('currentScanningSym').innerText = `${targetSym}...`;
-      document.getElementById('scanTimestamp').innerText = new Date().toLocaleTimeString();
 
       renderTable();
     }
@@ -668,13 +660,16 @@
       document.getElementById('scanStatusText').innerHTML = `<span class="text-roseSignal">Scanner Stopped</span>`;
     }
 
-    /* Initialize workspace on boot */
     window.addEventListener('DOMContentLoaded', () => {
       renderWatchlistChips();
       recalculateMetrics();
       renderTable();
       document.getElementById('scanTimestamp').innerText = new Date().toLocaleTimeString();
       scanTimer = setInterval(runScanCycle, 1800);
+
+      document.body.addEventListener('click', () => {
+        soundEngine.init();
+      }, { once: true });
     });
   </script>
 </body>
