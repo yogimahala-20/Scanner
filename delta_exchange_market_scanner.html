@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Delta Exchange Market Scanner - Live Market Workspace</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            themeBg: '#030b14',
+            panelBg: '#061626',
+            cardBg: '#081a2e',
+            borderDark: '#0e263f',
+            borderLight: '#18385a',
+            tealAccent: '#16b99b',
+            tealHover: '#13a287',
+            emeraldSignal: '#10b981',
+            roseSignal: '#f43f5e',
+            textDim: '#7089a6',
+            textBright: '#e2edf8',
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom terminal scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #030b14;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #112a45;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #193e66;
+    }
+
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+      -webkit-appearance: none; 
+      margin: 0; 
+    }
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+    .scanner-glow {
+      box-shadow: 0 0 15px rgba(22, 185, 155, 0.25);
+    }
+  </style>
+</head>
+
+<body class="bg-themeBg text-textDim font-sans antialiased min-h-screen flex flex-col selection:bg-tealAccent selection:text-black">
+  <!-- TOP NAV BAR -->
+  <header class="h-14 border-b border-borderDark bg-[#04101e] px-5 flex items-center justify-between shadow-lg sticky top-0 z-40">
+    <div class="flex items-center space-x-3">
+      <div class="h-8 w-8 rounded bg-gradient-to-tr from-tealAccent to-emerald-400 flex items-center justify-center text-slate-950 font-black text-lg shadow-md shadow-tealAccent/20">
+        Δ
+      </div>
+      <div>
+        <div class="flex items-center space-x-2">
+          <span class="text-white font-extrabold tracking-wide text-sm">DELTA EXCHANGE</span>
+          <span class="text-[10px] uppercase font-mono px-1.5 py-0.5 rounded bg-tealAccent/10 text-tealAccent border border-tealAccent/30">PRO SCANNER</span>
+        </div>
+        <p class="text-[10px] text-textDim">Continuous Low-Latency Signal Workspace</p>
+      </div>
+    </div>
+
+    <div class="flex items-center space-x-4 text-xs">
+      <!-- Audio feedback toggle -->
+      <button id="soundToggleBtn" onclick="toggleAudio()" class="flex items-center space-x-1.5 px-3 py-1 rounded border border-borderDark bg-panelBg hover:bg-cardBg transition text-slate-300">
+        <svg id="soundIconOn" class="w-3.5 h-3.5 text-tealAccent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+        <svg id="soundIconOff" class="w-3.5 h-3.5 text-slate-500 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path></svg>
+        <span id="soundLabel">Audio Alerts Active</span>
+      </button>
+
+      <!-- Connection status indicator badge -->
+      <div class="flex items-center space-x-2 px-3 py-1 rounded border border-borderDark bg-panelBg">
+        <span id="statusDot" class="w-2 h-2 rounded-full bg-emeraldSignal shadow-[0_0_8px_#10b981]"></span>
+        <span id="statusBadgeText" class="font-mono text-[11px] text-textBright font-medium">ONLINE</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN LAYOUT -->
+  <main class="flex-1 p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-5 max-w-[1850px] mx-auto w-full">
+
+    <!-- ==================== LEFT SIDEBAR: CONTROL CENTRE ==================== -->
+    <aside class="lg:col-span-4 xl:col-span-3 flex flex-col space-y-4">
+      <div class="flex items-center justify-between pb-1 border-b border-borderDark">
+        <span class="text-[11px] font-bold tracking-widest uppercase text-textBright">CONTROL CENTRE</span>
+        <span class="text-[10px] font-mono text-tealAccent">STANDALONE HOST</span>
+      </div>
+
+      <!-- 1. CONNECTION BOX -->
+      <section class="bg-panelBg border border-borderDark rounded-lg p-4 shadow-sm flex flex-col space-y-2.5">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-textBright">CONNECTION</h3>
+          <span class="text-[10px] text-textDim font-mono">Zero Cloud Leak</span>
+        </div>
+
+        <div>
+          <label class="text-[10px] font-medium text-textDim block mb-1">API Key</label>
+          <input id="apiKeyInput" type="text" value="dlt_live_948194a28941fec091" class="w-full bg-[#030d18] border border-borderDark rounded px-2.5 py-1.5 text-xs text-textBright font-mono focus:border-tealAccent focus:outline-none transition">
+        </div>
+
+        <div>
+          <label class="text-[10px] font-medium text-textDim block mb-1">API Secret</label>
+          <input id="apiSecretInput" type="password" value="••••••••••••••••••••••••••••••••" class="w-full bg-[#030d18] border border-borderDark rounded px-2.5 py-1.5 text-xs text-textBright font-mono focus:border-tealAccent focus:outline-none transition">
+        </div>
+
+        <button id="connectBtn" onclick="toggleConnection()" class="w-full py-1.5 mt-1 rounded text-xs font-semibold border border-tealAccent/60 text-tealAccent bg-tealAccent/10 hover:bg-tealAccent/20 transition">
+          Disconnect
+        </button>
+      </section>
+
+      <!-- 2. WATCHLIST BOX -->
+      <section class="bg-panelBg border border-borderDark rounded-lg p-4 shadow-sm flex flex-col space-y-3">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-textBright">WATCHLIST</h3>
+          <span id="watchlistCount" class="text-[10px] font-mono text-tealAccent">10 Symbols</span>
+        </div>
+
+        <!-- Symbol chip pill cloud -->
+        <div id="watchlistContainer" class="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto pr-1">
+          <!-- Dynamically filled by JS -->
+        </div>
+
+        <!-- Add symbol form -->
+        <form onsubmit="addSymbol(event)" class="flex space-x-2 pt-1">
+          <input id="newSymbolInput" type="text" placeholder="Add symbol e.g. DOGEUSD" class="flex-1 bg-[#030d18] border border-borderDark rounded px-2.5 py-1.5 text-xs text-textBright font-mono uppercase focus:border-tealAccent focus:outline-none transition">
+          <button type="submit" class="bg-[#0b243d] hover:bg-[#113253] text-tealAccent font-semibold px-3 py-1.5 rounded text-xs border border-borderLight transition">
+            Add
+          </button>
+        </form>
+      </section>
+
+      <!-- 3. INDICATORS BOX -->
+      <section class="bg-panelBg border border-borderDark rounded-lg p-4 shadow-sm flex flex-col space-y-3">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-textBright">INDICATORS</h3>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-[10px] text-textDim block mb-1">RSI Period</label>
+            <input id="rsiPeriod" type="number" value="14" class="w-full bg-[#030d18] border border-borderDark rounded px-2 py-1 text-xs text-textBright font-mono focus:border-tealAccent focus:outline-none">
+          </div>
+          <div>
+            <label class="text-[10px] text-textDim block mb-1">History (days)</label>
+            <input id="historyDays" type="number" value="7" class="w-full bg-[#030d18] border border-borderDark rounded px-2 py-1 text-xs text-textBright font-mono focus:border-tealAccent focus:outline-none">
+          </div>
+          <div>
+            <label class="text-[10px] text-textDim block mb-1">EMA Fast</label>
+            <input id="emaFast" type="number" value="20" class="w-full bg-[#030d18] border border-borderDark rounded px-2 py-1 text-xs text-textBright font-mono focus:border-tealAccent focus:outline-none">
+          </div>
+          <div>
+            <label class="text-[10px] text-textDim block mb-1">EMA Slow</label>
+            <input id="emaSlow" type="number" value="50" class="w-full bg-[#030d18] border border-borderDark rounded px-2 py-1 text-xs text-textBright font-mono focus:border-tealAccent focus:outline-none">
+          </div>
+          <div>
+            <label class="text-[10px] text-textDim block mb-1">RSI Bull &gt;</label>
+            <input id="rsiBull" type="number" value="60" class="w-full bg-[#030d18] border border-borderDark rounded px-2 py-1 text-xs text-textBright font-mono focus:border-tealAccent focus:outline-none">
+          </div>
+          <div>
+            <label class="text-[10px] text-textDim block mb-1">RSI Bear &lt;</label>
+            <input id="rsiBear" type="number" value="40" class="w-full bg-[#030d18] border border-borderDark rounded px-2 py-1 text-xs text-textBright font-mono focus:border-tealAccent focus:outline-none">
+          </div>
+        </div>
+
+        <div>
+          <label class="text-[10px] text-textDim block mb-1">Timeframe</label>
+          <select id="timeframeSelect" class="w-full bg-[#030d18] border border-borderDark rounded px-2 py-1.5 text-xs text-textBright focus:border-tealAccent focus:outline-none">
+            <option value="15minute" selected>15minute</option>
+            <option value="1hour">1hour</option>
+            <option value="4hour">4hour</option>
+            <option value="1day">1day</option>
+          </select>
+        </div>
+
+        <button onclick="applySettings()" class="w-full bg-tealAccent hover:bg-tealHover text-slate-950 font-bold py-2 rounded text-xs transition shadow-md shadow-tealAccent/20">
+          Apply Settings
+        </button>
+      </section>
+
+      <!-- 4. CONTINUOUS SCAN BOX -->
+      <section class="bg-panelBg border border-borderDark rounded-lg p-4 shadow-sm flex flex-col space-y-2">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-textBright">CONTINUOUS SCAN</h3>
+        <div class="grid grid-cols-2 gap-2 mt-1">
+          <button id="startScanBtn" onclick="startScanner()" class="py-2 rounded font-bold text-xs flex items-center justify-center space-x-1.5 border border-tealAccent/50 bg-tealAccent/20 text-tealAccent shadow-sm transition">
+            <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            <span>Start</span>
+          </button>
+          <button id="stopScanBtn" onclick="stopScanner()" class="py-2 rounded font-bold text-xs flex items-center justify-center space-x-1.5 border border-borderDark bg-[#030d18] text-slate-400 hover:bg-cardBg transition">
+            <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>
+            <span>Stop</span>
+          </button>
+        </div>
+      </section>
+    </aside>
+
+    <!-- ==================== RIGHT PANEL: LIVE MARKET WORKSPACE ==================== -->
+    <section class="lg:col-span-8 xl:col-span-9 flex flex-col space-y-4">
+      
+      <!-- Workspace Header -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <span class="text-[10px] text-textDim uppercase tracking-widest font-semibold block">LIVE MARKET WORKSPACE</span>
+          <h1 class="text-2xl font-black text-white tracking-tight flex items-center space-x-2">
+            <span>Signal monitor</span>
+          </h1>
+        </div>
+
+        <!-- Scanning Pulse Indicator -->
+        <div class="flex items-center space-x-3 bg-panelBg border border-borderDark px-4 py-2 rounded-lg shadow-sm">
+          <span class="relative flex h-2.5 w-2.5">
+            <span id="scanBeaconPing" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tealAccent opacity-75"></span>
+            <span id="scanBeaconDot" class="relative inline-flex rounded-full h-2.5 w-2.5 bg-tealAccent"></span>
+          </span>
+          <span id="scanStatusText" class="text-xs font-mono text-textBright">
+            Scanning <span id="currentScanningSym" class="text-tealAccent font-bold">BTCUSD...</span>
+          </span>
+          <span id="scanTimestamp" class="text-[10px] text-textDim font-mono border-l border-borderDark pl-3">
+            --:--:--
+          </span>
+        </div>
+      </div>
+
+      <!-- 3 Top Metric Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <!-- Symbols Monitored -->
+        <div class="bg-panelBg border border-borderDark rounded-lg p-4 shadow-sm">
+          <div id="metricMonitored" class="text-3xl font-black text-white font-mono tracking-tight">10</div>
+          <div class="text-[11px] text-textDim uppercase tracking-wider mt-1 font-semibold">Symbols monitored</div>
+        </div>
+
+        <!-- Buy Signals -->
+        <div class="bg-panelBg border border-borderDark rounded-lg p-4 shadow-sm relative overflow-hidden">
+          <div class="flex items-baseline justify-between">
+            <div id="metricBuy" class="text-3xl font-black text-emeraldSignal font-mono tracking-tight">1</div>
+            <div class="h-2 w-2 rounded-full bg-emeraldSignal shadow-[0_0_8px_#10b981]"></div>
+          </div>
+          <div class="text-[11px] text-textDim uppercase tracking-wider mt-1 font-semibold">Buy signals</div>
+        </div>
+
+        <!-- Sell Signals -->
+        <div class="bg-panelBg border border-borderDark rounded-lg p-4 shadow-sm relative overflow-hidden">
+          <div class="flex items-baseline justify-between">
+            <div id="metricSell" class="text-3xl font-black text-roseSignal font-mono tracking-tight">1</div>
+            <div class="h-2 w-2 rounded-full bg-roseSignal shadow-[0_0_8px_#f43f5e]"></div>
+          </div>
+          <div class="text-[11px] text-textDim uppercase tracking-wider mt-1 font-semibold">Sell signals</div>
+        </div>
+      </div>
+
+      <!-- Live Financial Monitor Table -->
+      <div class="bg-panelBg border border-borderDark rounded-lg shadow-md overflow-hidden flex flex-col flex-1">
+        <div class="overflow-x-auto flex-1">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-[#040e19] text-[10px] font-bold text-textDim uppercase tracking-wider border-b border-borderDark">
+                <th class="py-3 px-4">SYMBOL</th>
+                <th class="py-3 px-3">CLOSE</th>
+                <th class="py-3 px-3">OPEN</th>
+                <th class="py-3 px-3">RSI</th>
+                <th class="py-3 px-3">EMA FAST</th>
+                <th class="py-3 px-3">EMA SLOW</th>
+                <th class="py-3 px-3">CANDLE</th>
+                <th class="py-3 px-3">MOMENTUM</th>
+                <th class="py-3 px-3">TREND</th>
+              </tr>
+            </thead>
+            <tbody id="marketTableBody" class="divide-y divide-[#0c2238] font-mono">
+              <!-- Dynamically rendered rows -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Footer strip -->
+        <div class="bg-[#040e19] px-4 py-2 border-t border-borderDark flex items-center justify-between text-[10px] text-textDim">
+          <div class="flex items-center space-x-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-tealAccent"></span>
+            <span>Delta Public Orderbook Stream • Auto Lowest Practical Latency</span>
+          </div>
+          <span id="indicatorConfigSummary" class="font-mono text-slate-500">
+            TF: 15m | Fast: 20 | Slow: 50 | RSI: 14
+          </span>
+        </div>
+      </div>
+
+      <!-- Risk Disclaimer -->
+      <div class="bg-[#051322] border border-borderDark rounded-lg p-3 text-[10px] text-textDim flex items-start space-x-2">
+        <svg class="w-3.5 h-3.5 text-amber-500 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+        <p>
+          <strong class="text-slate-300">Risk Disclaimer:</strong> Trading cryptocurrency derivatives involves substantial risk of loss and is not suitable for every investor. Indicators do not guarantee market direction.
+        </p>
+      </div>
+
+    </section>
+  </main>
+
+  <script>
+    /* ================= AUDIO SYNTHESIZER ================= */
+    class AudioAlertEngine {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) {
+            this.ctx = new AudioContext();
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      playBuyChime() {
+        if (!this.enabled) return;
+        try {
+          this.init();
+          if (!this.ctx) return;
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(587.33, now); // D5
+          osc.frequency.exponentialRampToValueAtTime(880.00, now + 0.15); // A5
+
+          gain.gain.setValueAtTime(0.001, now);
+          gain.gain.linearRampToValueAtTime(0.12, now + 0.03);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.3);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.32);
+        } catch(e) {}
+      }
+
+      playSellChime() {
+        if (!this.enabled) return;
+        try {
+          this.init();
+          if (!this.ctx) return;
+          const now = this.ctx.currentTime;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(520, now);
+          osc.frequency.exponentialRampToValueAtTime(320, now + 0.16);
+
+          gain.gain.setValueAtTime(0.001, now);
+          gain.gain.linearRampToValueAtTime(0.1, now + 0.03);
+          gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.3);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.32);
+        } catch(e) {}
+      }
+    }
+
+    const soundEngine = new AudioAlertEngine();
+
+    function toggleAudio() {
+      soundEngine.init();
+      soundEngine.enabled = !soundEngine.enabled;
+      document.getElementById('soundIconOn').classList.toggle('hidden', !soundEngine.enabled);
+      document.getElementById('soundIconOff').classList.toggle('hidden', soundEngine.enabled);
+      document.getElementById('soundLabel').innerText = soundEngine.enabled ? 'Audio Alerts Active' : 'Muted';
+    }
+
+    /* ================= INITIAL STATE & DATA MODEL ================= */
+    let isConnected = true;
+    let isScanning = true;
+    let scanTimer = null;
+    let scanIndex = 0;
+
+    let watchlist = [
+      'BTCUSD', 'ETHUSD', 'XAUTUSD', 'SOLUSD', 'EVAUSD', 
+      'LABUSD', 'MUSD', 'XRPUSD', 'BLURUSD', 'HUSD'
+    ];
+
+    // Seed baseline values matching screenshot exactly
+    const initialSeed = {
+      'BTCUSD':  { close: 64937.5000, open: 64953.5000, rsi: 48.65, emaFast: 64954.0756, emaSlow: 64916.8101, candle: 'Red', momentum: 'Neutral', trend: 'Up', decimals: 4 },
+      'ETHUSD':  { close: 1915.4500, open: 1915.9000, rsi: 50.39, emaFast: 1915.6007, emaSlow: 1914.8307, candle: 'Red', momentum: 'Neutral', trend: 'Up', decimals: 4 },
+      'XAUTUSD': { close: 4326.0000, open: 4326.6000, rsi: 47.24, emaFast: 4327.1049, emaSlow: 4324.6584, candle: 'Red', momentum: 'Neutral', trend: 'Up', decimals: 4 },
+      'SOLUSD':  { close: 74.7180,  open: 74.7470,  rsi: 66.18, emaFast: 74.4499,   emaSlow: 74.1197,   candle: 'Red', momentum: 'Bullish', trend: 'Up', decimals: 4 },
+      'EVAUSD':  { close: 0.8550,   open: 0.8523,   rsi: 48.82, emaFast: 0.8555,    emaSlow: 0.8565,    candle: 'Green', momentum: 'Neutral', trend: 'Down', decimals: 4 },
+      'LABUSD':  { close: 0.1255,   open: 0.1264,   rsi: 38.93, emaFast: 0.1266,    emaSlow: 0.1270,    candle: 'Red', momentum: 'Bearish', trend: 'Down', decimals: 4 },
+      'MUSD':    { close: 1.1432,   open: 1.1432,   rsi: 30.20, emaFast: 1.1528,    emaSlow: 1.1572,    candle: 'Flat', momentum: 'Bearish', trend: 'Down', decimals: 4 },
+      'XRPUSD':  { close: 1.0352,   open: 1.0344,   rsi: 60.77, emaFast: 1.0334,    emaSlow: 1.0306,    candle: 'Green', momentum: 'Bullish', trend: 'Up', decimals: 4 },
+      'BLURUSD': { close: 0.0135,   open: 0.0135,   rsi: 47.87, emaFast: 0.0136,    emaSlow: 0.0135,    candle: 'Flat', momentum: 'Neutral', trend: 'Up', decimals: 4 },
+      'HUSD':    { close: 0.0786,   open: 0.0795,   rsi: 48.63, emaFast: 0.0784,    emaSlow: 0.0804,    candle: 'Red', momentum: 'Neutral', trend: 'Down', decimals: 4 }
+    };
+
+    let marketData = {};
+    watchlist.forEach(sym => {
+      marketData[sym] = { ...initialSeed[sym] };
+    });
+
+    let config = {
+      rsiPeriod: 14,
+      historyDays: 7,
+      emaFast: 20,
+      emaSlow: 50,
+      rsiBull: 60,
+      rsiBear: 40,
+      timeframe: '15minute'
+    };
+
+    /* ================= WATCHLIST CHIP CONTROLS ================= */
+    function renderWatchlistChips() {
+      const container = document.getElementById('watchlistContainer');
+      container.innerHTML = '';
+      watchlist.forEach(sym => {
+        const chip = document.createElement('div');
+        chip.className = 'inline-flex items-center space-x-1.5 bg-[#0b243d] text-slate-200 text-xs px-2.5 py-1 rounded-full border border-borderDark hover:border-tealAccent/60 transition';
+        chip.innerHTML = `
+          <span class="font-mono text-[11px] font-semibold">${sym}</span>
+          <button onclick="removeSymbol('${sym}')" class="text-slate-400 hover:text-roseSignal transition text-xs">×</button>
+        `;
+        container.appendChild(chip);
+      });
+      document.getElementById('watchlistCount').innerText = `${watchlist.length} Symbols`;
+      document.getElementById('metricMonitored').innerText = watchlist.length;
+    }
+
+    function addSymbol(e) {
+      if (e) e.preventDefault();
+      const input = document.getElementById('newSymbolInput');
+      const val = input.value.trim().toUpperCase();
+      if (!val) return;
+      if (watchlist.includes(val)) {
+        input.value = '';
+        return;
+      }
+      
+      const seedPrice = Math.random() * 50 + 1;
+      watchlist.push(val);
+      marketData[val] = {
+        close: parseFloat(seedPrice.toFixed(4)),
+        open: parseFloat((seedPrice * 0.998).toFixed(4)),
+        rsi: 50.00,
+        emaFast: parseFloat(seedPrice.toFixed(4)),
+        emaSlow: parseFloat((seedPrice * 0.995).toFixed(4)),
+        candle: 'Green',
+        momentum: 'Neutral',
+        trend: 'Up',
+        decimals: 4
+      };
+      input.value = '';
+      renderWatchlistChips();
+      renderTable();
+    }
+
+    function removeSymbol(sym) {
+      if (watchlist.length <= 1) return;
+      watchlist = watchlist.filter(s => s !== sym);
+      delete marketData[sym];
+      renderWatchlistChips();
+      renderTable();
+    }
+
+    /* ================= CONNECTION TOGGLE ================= */
+    function toggleConnection() {
+      isConnected = !isConnected;
+      const btn = document.getElementById('connectBtn');
+      const dot = document.getElementById('statusDot');
+      const badge = document.getElementById('statusBadgeText');
+
+      if (isConnected) {
+        btn.innerText = 'Disconnect';
+        btn.className = 'w-full py-1.5 mt-1 rounded text-xs font-semibold border border-tealAccent/60 text-tealAccent bg-tealAccent/10 hover:bg-tealAccent/20 transition';
+        dot.className = 'w-2 h-2 rounded-full bg-emeraldSignal shadow-[0_0_8px_#10b981]';
+        badge.innerText = 'ONLINE';
+        badge.className = 'font-mono text-[11px] text-textBright font-medium';
+      } else {
+        btn.innerText = 'Connect';
+        btn.className = 'w-full py-1.5 mt-1 rounded text-xs font-semibold border border-roseSignal/60 text-roseSignal bg-roseSignal/10 hover:bg-roseSignal/20 transition';
+        dot.className = 'w-2 h-2 rounded-full bg-roseSignal shadow-[0_0_8px_#f43f5e]';
+        badge.innerText = 'OFFLINE';
+        badge.className = 'font-mono text-[11px] text-roseSignal font-medium';
+      }
+    }
+
+    /* ================= SETTINGS APPLICATION ================= */
+    function applySettings() {
+      config.rsiPeriod = parseInt(document.getElementById('rsiPeriod').value) || 14;
+      config.historyDays = parseInt(document.getElementById('historyDays').value) || 7;
+      config.emaFast = parseInt(document.getElementById('emaFast').value) || 20;
+      config.emaSlow = parseInt(document.getElementById('emaSlow').value) || 50;
+      config.rsiBull = parseFloat(document.getElementById('rsiBull').value) || 60;
+      config.rsiBear = parseFloat(document.getElementById('rsiBear').value) || 40;
+      config.timeframe = document.getElementById('timeframeSelect').value;
+
+      document.getElementById('indicatorConfigSummary').innerText = 
+        `TF: ${config.timeframe} | Fast: ${config.emaFast} | Slow: ${config.emaSlow} | RSI: ${config.rsiPeriod}`;
+
+      recalculateMetrics();
+      renderTable();
+    }
+
+    /* ================= METRIC RECALCULATION & SIGNALS ================= */
+    function recalculateMetrics() {
+      let buyCount = 0;
+      let sellCount = 0;
+
+      watchlist.forEach(sym => {
+        const item = marketData[sym];
+        if (!item) return;
+
+        // Classify Momentum
+        if (item.rsi >= config.rsiBull) {
+          item.momentum = 'Bullish';
+        } else if (item.rsi <= config.rsiBear) {
+          item.momentum = 'Bearish';
+        } else {
+          item.momentum = 'Neutral';
+        }
+
+        // Classify Trend
+        item.trend = item.emaFast >= item.emaSlow ? 'Up' : 'Down';
+
+        // Signal classification
+        if (item.trend === 'Up' && item.candle === 'Green' && item.momentum === 'Bullish') {
+          buyCount++;
+        } else if (item.trend === 'Down' && item.candle === 'Red' && item.momentum === 'Bearish') {
+          sellCount++;
+        }
+      });
+
+      document.getElementById('metricBuy').innerText = buyCount;
+      document.getElementById('metricSell').innerText = sellCount;
+    }
+
+    /* ================= TABLE RENDER ================= */
+    function renderTable() {
+      const tbody = document.getElementById('marketTableBody');
+      tbody.innerHTML = '';
+
+      const activeSymbol = watchlist[scanIndex] || '';
+
+      watchlist.forEach(sym => {
+        const item = marketData[sym];
+        if (!item) return;
+
+        const isActivelyScanning = isScanning && (sym === activeSymbol);
+
+        const tr = document.createElement('tr');
+        tr.className = `transition-colors hover:bg-[#0b2036] ${isActivelyScanning ? 'bg-[#0a2745]/60 ring-1 ring-inset ring-tealAccent/30' : ''}`;
+
+        // Colors
+        const candleColor = item.candle === 'Green' ? 'text-emeraldSignal font-medium' : (item.candle === 'Red' ? 'text-roseSignal font-medium' : 'text-slate-400');
+        const momentumColor = item.momentum === 'Bullish' ? 'text-emeraldSignal' : (item.momentum === 'Bearish' ? 'text-roseSignal' : 'text-slate-400');
+        const trendColor = item.trend === 'Up' ? 'text-textBright' : 'text-slate-400';
+
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-bold text-white flex items-center space-x-2">
+            <span class="w-1.5 h-1.5 rounded-full ${isActivelyScanning ? 'bg-tealAccent animate-ping' : 'bg-tealAccent'}"></span>
+            <span>${sym}</span>
+          </td>
+          <td class="py-3 px-3 text-textBright">${item.close.toFixed(item.decimals)}</td>
+          <td class="py-3 px-3 text-textDim">${item.open.toFixed(item.decimals)}</td>
+          <td class="py-3 px-3 text-textBright font-semibold">${item.rsi.toFixed(2)}</td>
+          <td class="py-3 px-3 text-textDim">${item.emaFast.toFixed(item.decimals)}</td>
+          <td class="py-3 px-3 text-textDim">${item.emaSlow.toFixed(item.decimals)}</td>
+          <td class="py-3 px-3 ${candleColor}">${item.candle}</td>
+          <td class="py-3 px-3 ${momentumColor}">${item.momentum}</td>
+          <td class="py-3 px-3 ${trendColor}">${item.trend}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    /* ================= CONTINUOUS LOW-LATENCY ENGINE ================= */
+    function runScanCycle() {
+      if (!isScanning || watchlist.length === 0) return;
+
+      scanIndex = (scanIndex + 1) % watchlist.length;
+      const targetSym = watchlist[scanIndex];
+      const item = marketData[targetSym];
+
+      if (item) {
+        // Realistic micro-tick simulation simulating Delta's fastest tick rate
+        const deltaPct = (Math.random() - 0.495) * 0.0028;
+        const newClose = Math.max(0.0001, item.close * (1 + deltaPct));
+        
+        // Dynamic RSI shifts
+        let newRsi = item.rsi + (deltaPct > 0 ? Math.random() * 1.6 : -Math.random() * 1.6);
+        newRsi = Math.min(88, Math.max(16, newRsi));
+
+        // EMA Formula updates
+        const alphaFast = 2 / (config.emaFast + 1);
+        const alphaSlow = 2 / (config.emaSlow + 1);
+        const newEmaFast = newClose * alphaFast + item.emaFast * (1 - alphaFast);
+        const newEmaSlow = newClose * alphaSlow + item.emaSlow * (1 - alphaSlow);
+
+        const diff = newClose - item.open;
+        const newCandle = Math.abs(diff) < 0.00005 ? 'Flat' : (diff > 0 ? 'Green' : 'Red');
+
+        // Check if signal just triggered to sound alert
+        const wasBuy = (item.trend === 'Up' && item.candle === 'Green' && item.momentum === 'Bullish');
+        const wasSell = (item.trend === 'Down' && item.candle === 'Red' && item.momentum === 'Bearish');
+
+        item.close = newClose;
+        item.rsi = newRsi;
+        item.emaFast = newEmaFast;
+        item.emaSlow = newEmaSlow;
+        item.candle = newCandle;
+
+        recalculateMetrics();
+
+        const isNowBuy = (item.trend === 'Up' && item.candle === 'Green' && item.momentum === 'Bullish');
+        const isNowSell = (item.trend === 'Down' && item.candle === 'Red' && item.momentum === 'Bearish');
+
+        if (!wasBuy && isNowBuy) soundEngine.playBuyChime();
+        if (!wasSell && isNowSell) soundEngine.playSellChime();
+      }
+
+      // Update ticker label and timestamp
+      document.getElementById('currentScanningSym').innerText = `${targetSym}...`;
+      document.getElementById('scanTimestamp').innerText = new Date().toLocaleTimeString();
+
+      renderTable();
+    }
+
+    function startScanner() {
+      if (isScanning) return;
+      isScanning = true;
+      document.getElementById('startScanBtn').className = 'py-2 rounded font-bold text-xs flex items-center justify-center space-x-1.5 border border-tealAccent/50 bg-tealAccent/20 text-tealAccent shadow-sm transition';
+      document.getElementById('stopScanBtn').className = 'py-2 rounded font-bold text-xs flex items-center justify-center space-x-1.5 border border-borderDark bg-[#030d18] text-slate-400 hover:bg-cardBg transition';
+      document.getElementById('scanBeaconPing').classList.remove('hidden');
+      document.getElementById('scanStatusText').innerHTML = `Scanning <span id="currentScanningSym" class="text-tealAccent font-bold">${watchlist[scanIndex]}...</span>`;
+      
+      scanTimer = setInterval(runScanCycle, 1800);
+    }
+
+    function stopScanner() {
+      isScanning = false;
+      clearInterval(scanTimer);
+      document.getElementById('startScanBtn').className = 'py-2 rounded font-bold text-xs flex items-center justify-center space-x-1.5 border border-borderDark bg-[#030d18] text-slate-400 hover:bg-cardBg transition';
+      document.getElementById('stopScanBtn').className = 'py-2 rounded font-bold text-xs flex items-center justify-center space-x-1.5 border border-roseSignal/50 bg-roseSignal/20 text-roseSignal shadow-sm transition';
+      document.getElementById('scanBeaconPing').classList.add('hidden');
+      document.getElementById('scanStatusText').innerHTML = `<span class="text-roseSignal">Scanner Stopped</span>`;
+    }
+
+    /* Initialize workspace on boot */
+    window.addEventListener('DOMContentLoaded', () => {
+      renderWatchlistChips();
+      recalculateMetrics();
+      renderTable();
+      document.getElementById('scanTimestamp').innerText = new Date().toLocaleTimeString();
+      scanTimer = setInterval(runScanCycle, 1800);
+    });
+  </script>
+</body>
+</html>
