@@ -36,29 +36,13 @@
   </script>
 
   <style>
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #030b14;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #112a45;
-      border-radius: 4px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #193e66;
-    }
-
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #030b14; }
+    ::-webkit-scrollbar-thumb { background: #112a45; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #193e66; }
     input[type=number]::-webkit-inner-spin-button, 
-    input[type=number]::-webkit-outer-spin-button { 
-      -webkit-appearance: none; 
-      margin: 0; 
-    }
-    input[type=number] {
-      -moz-appearance: textfield;
-    }
+    input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    input[type=number] { -moz-appearance: textfield; }
   </style>
 </head>
 
@@ -79,14 +63,12 @@
     </div>
 
     <div class="flex items-center space-x-4 text-xs">
-      <!-- Audio feedback toggle -->
       <button id="soundToggleBtn" onclick="toggleAudio()" class="flex items-center space-x-1.5 px-3 py-1 rounded border border-borderDark bg-panelBg hover:bg-cardBg transition text-slate-300">
         <svg id="soundIconOn" class="w-3.5 h-3.5 text-tealAccent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
         <svg id="soundIconOff" class="w-3.5 h-3.5 text-slate-500 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path></svg>
         <span id="soundLabel">Audio Alerts Active</span>
       </button>
 
-      <!-- Connection status indicator badge -->
       <div class="flex items-center space-x-2 px-3 py-1 rounded border border-borderDark bg-panelBg">
         <span id="statusDot" class="w-2 h-2 rounded-full bg-emeraldSignal shadow-[0_0_8px_#10b981]"></span>
         <span id="statusBadgeText" class="font-mono text-[11px] text-textBright font-medium">ONLINE</span>
@@ -97,7 +79,7 @@
   <!-- MAIN LAYOUT -->
   <main class="flex-1 p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-5 max-w-[1850px] mx-auto w-full">
 
-    <!-- LEFT SIDEBAR: CONTROL CENTRE -->
+    <!-- LEFT SIDEBAR -->
     <aside class="lg:col-span-4 xl:col-span-3 flex flex-col space-y-4">
       <div class="flex items-center justify-between pb-1 border-b border-borderDark">
         <span class="text-[11px] font-bold tracking-widest uppercase text-textBright">CONTROL CENTRE</span>
@@ -130,7 +112,7 @@
       <section class="bg-panelBg border border-borderDark rounded-lg p-4 shadow-sm flex flex-col space-y-3">
         <div class="flex items-center justify-between">
           <h3 class="text-xs font-bold uppercase tracking-wider text-textBright">WATCHLIST</h3>
-          <span id="watchlistCount" class="text-[10px] font-mono text-tealAccent">10 Symbols</span>
+          <span id="watchlistCount" class="text-[10px] font-mono text-tealAccent">5 Symbols</span>
         </div>
 
         <div id="watchlistContainer" class="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto pr-1"></div>
@@ -189,7 +171,7 @@
         </button>
       </section>
 
-      <!-- CONTINUOUS SCAN BOX -->
+      <!-- SCAN CONTROLS -->
       <section class="bg-panelBg border border-borderDark rounded-lg p-4 shadow-sm flex flex-col space-y-2">
         <h3 class="text-xs font-bold uppercase tracking-wider text-textBright">CONTINUOUS SCAN</h3>
         <div class="grid grid-cols-2 gap-2 mt-1">
@@ -205,7 +187,7 @@
       </section>
     </aside>
 
-    <!-- RIGHT PANEL: LIVE MARKET WORKSPACE -->
+    <!-- RIGHT WORKSPACE -->
     <section class="lg:col-span-8 xl:col-span-9 flex flex-col space-y-4">
       
       <!-- Workspace Header -->
@@ -217,60 +199,74 @@
           </h1>
         </div>
 
-        <!-- Scanning Pulse Indicator -->
         <div class="flex items-center space-x-3 bg-panelBg border border-borderDark px-4 py-2 rounded-lg shadow-sm">
           <span class="relative flex h-2.5 w-2.5">
             <span id="scanBeaconPing" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tealAccent opacity-75"></span>
             <span id="scanBeaconDot" class="relative inline-flex rounded-full h-2.5 w-2.5 bg-tealAccent"></span>
           </span>
           <span id="scanStatusText" class="text-xs font-mono text-textBright">
-            Scanning <span id="currentScanningSym" class="text-tealAccent font-bold">BTCUSD...</span>
+            Scanning <span id="currentScanningSym" class="text-tealAccent font-bold">SOLUSD...</span>
           </span>
-          <span id="scanTimestamp" class="text-[10px] text-textDim font-mono border-l border-borderDark pl-3">
-            --:--:--
-          </span>
+          <span id="scanTimestamp" class="text-[10px] text-textDim font-mono border-l border-borderDark pl-3">--:--:--</span>
         </div>
       </div>
 
-      <!-- Metric Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <!-- EXACT 4 CARDS AS IN SCREENSHOT -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <!-- Card 1: Monitored -->
         <div class="bg-panelBg border border-borderDark rounded-lg p-4 shadow-sm">
-          <div id="metricMonitored" class="text-3xl font-black text-white font-mono tracking-tight">10</div>
-          <div class="text-[11px] text-textDim uppercase tracking-wider mt-1 font-semibold">Symbols monitored</div>
+          <div class="text-[11px] text-textDim uppercase tracking-wider font-semibold">Symbols monitored</div>
+          <div id="metricMonitored" class="text-3xl font-black text-white font-mono tracking-tight mt-1">5</div>
+          <div class="text-[10px] text-textDim mt-1">Active data rows</div>
         </div>
 
-        <div class="bg-panelBg border border-borderDark rounded-lg p-4 shadow-sm relative overflow-hidden">
-          <div class="flex items-baseline justify-between">
-            <div id="metricBuy" class="text-3xl font-black text-emeraldSignal font-mono tracking-tight">0</div>
-            <div class="h-2 w-2 rounded-full bg-emeraldSignal shadow-[0_0_8px_#10b981]"></div>
-          </div>
-          <div class="text-[11px] text-textDim uppercase tracking-wider mt-1 font-semibold">Buy signals</div>
+        <!-- Card 2: Buy signals -->
+        <div class="bg-panelBg border border-borderDark rounded-lg p-4 shadow-sm relative">
+          <div class="text-[11px] text-textDim uppercase tracking-wider font-semibold">Buy signals</div>
+          <div id="metricBuy" class="text-3xl font-black text-emeraldSignal font-mono tracking-tight mt-1">1</div>
+          <div class="text-[10px] text-textDim mt-1">All factors aligned</div>
         </div>
 
-        <div class="bg-panelBg border border-borderDark rounded-lg p-4 shadow-sm relative overflow-hidden">
-          <div class="flex items-baseline justify-between">
-            <div id="metricSell" class="text-3xl font-black text-roseSignal font-mono tracking-tight">0</div>
-            <div class="h-2 w-2 rounded-full bg-roseSignal shadow-[0_0_8px_#f43f5e]"></div>
-          </div>
-          <div class="text-[11px] text-textDim uppercase tracking-wider mt-1 font-semibold">Sell signals</div>
+        <!-- Card 3: Sell signals -->
+        <div class="bg-panelBg border border-borderDark rounded-lg p-4 shadow-sm relative">
+          <div class="text-[11px] text-textDim uppercase tracking-wider font-semibold">Sell signals</div>
+          <div id="metricSell" class="text-3xl font-black text-roseSignal font-mono tracking-tight mt-1">0</div>
+          <div class="text-[10px] text-textDim mt-1">All factors aligned</div>
+        </div>
+
+        <!-- Card 4: Neutral -->
+        <div class="bg-panelBg border border-borderDark rounded-lg p-4 shadow-sm relative">
+          <div class="text-[11px] text-textDim uppercase tracking-wider font-semibold">Neutral</div>
+          <div id="metricNeutral" class="text-3xl font-black text-slate-300 font-mono tracking-tight mt-1">4</div>
+          <div class="text-[10px] text-textDim mt-1">Awaiting confluence</div>
         </div>
       </div>
 
-      <!-- Financial Monitor Table -->
+      <!-- TECHNICAL SIGNALS TABLE -->
       <div class="bg-panelBg border border-borderDark rounded-lg shadow-md overflow-hidden flex flex-col flex-1">
+        <div class="p-4 pb-2 border-b border-borderDark flex items-center justify-between">
+          <div>
+            <h2 class="text-sm font-black uppercase tracking-wider text-white">TECHNICAL SIGNALS</h2>
+            <p class="text-[11px] text-textDim">RSI + EMA trend + candle direction + momentum</p>
+          </div>
+          <div class="flex items-center space-x-1.5 text-xs text-tealAccent font-semibold font-mono">
+            <svg class="w-4 h-4 text-tealAccent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+            <span>Public Delta feed</span>
+          </div>
+        </div>
+
         <div class="overflow-x-auto flex-1">
           <table class="w-full text-left border-collapse text-xs">
             <thead>
               <tr class="bg-[#040e19] text-[10px] font-bold text-textDim uppercase tracking-wider border-b border-borderDark">
                 <th class="py-3 px-4">SYMBOL</th>
-                <th class="py-3 px-3">CLOSE</th>
-                <th class="py-3 px-3">OPEN</th>
                 <th class="py-3 px-3">RSI</th>
                 <th class="py-3 px-3">EMA FAST</th>
                 <th class="py-3 px-3">EMA SLOW</th>
                 <th class="py-3 px-3">CANDLE</th>
                 <th class="py-3 px-3">MOMENTUM</th>
                 <th class="py-3 px-3">TREND</th>
+                <th class="py-3 px-4 text-left">SIGNAL</th>
               </tr>
             </thead>
             <tbody id="marketTableBody" class="divide-y divide-[#0c2238] font-mono"></tbody>
@@ -300,25 +296,18 @@
   </main>
 
   <script>
-    /* ================= AUDIO SYNTHESIZER ================= */
     class AudioAlertEngine {
       constructor() {
         this.ctx = null;
         this.enabled = true;
       }
-
       init() {
         if (!this.ctx) {
           const AudioContext = window.AudioContext || window.webkitAudioContext;
-          if (AudioContext) {
-            this.ctx = new AudioContext();
-          }
+          if (AudioContext) this.ctx = new AudioContext();
         }
-        if (this.ctx && this.ctx.state === 'suspended') {
-          this.ctx.resume();
-        }
+        if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
       }
-
       playBuyChime() {
         if (!this.enabled) return;
         try {
@@ -327,22 +316,18 @@
           const now = this.ctx.currentTime;
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
-
           osc.type = 'triangle';
           osc.frequency.setValueAtTime(587.33, now);
           osc.frequency.exponentialRampToValueAtTime(880.00, now + 0.15);
-
           gain.gain.setValueAtTime(0.001, now);
           gain.gain.linearRampToValueAtTime(0.12, now + 0.03);
           gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.3);
-
           osc.connect(gain);
           gain.connect(this.ctx.destination);
           osc.start(now);
           osc.stop(now + 0.32);
         } catch(e) {}
       }
-
       playSellChime() {
         if (!this.enabled) return;
         try {
@@ -351,15 +336,12 @@
           const now = this.ctx.currentTime;
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
-
           osc.type = 'sawtooth';
           osc.frequency.setValueAtTime(520, now);
           osc.frequency.exponentialRampToValueAtTime(320, now + 0.16);
-
           gain.gain.setValueAtTime(0.001, now);
           gain.gain.linearRampToValueAtTime(0.1, now + 0.03);
           gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.3);
-
           osc.connect(gain);
           gain.connect(this.ctx.destination);
           osc.start(now);
@@ -378,28 +360,19 @@
       document.getElementById('soundLabel').innerText = soundEngine.enabled ? 'Audio Alerts Active' : 'Muted';
     }
 
-    /* ================= INITIAL STATE & DATA MODEL ================= */
     let isConnected = true;
     let isScanning = true;
     let scanTimer = null;
     let scanIndex = 0;
 
-    let watchlist = [
-      'BTCUSD', 'ETHUSD', 'XAUTUSD', 'SOLUSD', 'EVAUSD', 
-      'LABUSD', 'MUSD', 'XRPUSD', 'BLURUSD', 'HUSD'
-    ];
+    let watchlist = ['SOLUSD', 'BTCUSD', 'HUSD', 'ETHUSD', 'XRPUSD'];
 
     const initialSeed = {
-      'BTCUSD':  { close: 64937.5000, open: 64953.5000, rsi: 48.65, emaFast: 64954.0756, emaSlow: 64916.8101, candle: 'Red', momentum: 'Neutral', trend: 'Up', decimals: 4 },
-      'ETHUSD':  { close: 1915.4500, open: 1915.9000, rsi: 50.39, emaFast: 1915.6007, emaSlow: 1914.8307, candle: 'Red', momentum: 'Neutral', trend: 'Up', decimals: 4 },
-      'XAUTUSD': { close: 4326.0000, open: 4326.6000, rsi: 47.24, emaFast: 4327.1049, emaSlow: 4324.6584, candle: 'Red', momentum: 'Neutral', trend: 'Up', decimals: 4 },
-      'SOLUSD':  { close: 74.7180,  open: 74.7470,  rsi: 66.18, emaFast: 74.4499,   emaSlow: 74.1197,   candle: 'Red', momentum: 'Bullish', trend: 'Up', decimals: 4 },
-      'EVAUSD':  { close: 0.8550,   open: 0.8523,   rsi: 48.82, emaFast: 0.8555,    emaSlow: 0.8565,    candle: 'Green', momentum: 'Neutral', trend: 'Down', decimals: 4 },
-      'LABUSD':  { close: 0.1255,   open: 0.1264,   rsi: 38.93, emaFast: 0.1266,    emaSlow: 0.1270,    candle: 'Red', momentum: 'Bearish', trend: 'Down', decimals: 4 },
-      'MUSD':    { close: 1.1432,   open: 1.1432,   rsi: 30.20, emaFast: 1.1528,    emaSlow: 1.1572,    candle: 'Flat', momentum: 'Bearish', trend: 'Down', decimals: 4 },
-      'XRPUSD':  { close: 1.0352,   open: 1.0344,   rsi: 60.77, emaFast: 1.0334,    emaSlow: 1.0306,    candle: 'Green', momentum: 'Bullish', trend: 'Up', decimals: 4 },
-      'BLURUSD': { close: 0.0135,   open: 0.0135,   rsi: 47.87, emaFast: 0.0136,    emaSlow: 0.0135,    candle: 'Flat', momentum: 'Neutral', trend: 'Up', decimals: 4 },
-      'HUSD':    { close: 0.0786,   open: 0.0795,   rsi: 48.63, emaFast: 0.0784,    emaSlow: 0.0804,    candle: 'Red', momentum: 'Neutral', trend: 'Down', decimals: 4 }
+      'SOLUSD':  { close: 74.7180, open: 74.5000, rsi: 67.27, emaFast: 74.5039, emaSlow: 74.1680, candle: 'Green', momentum: 'Bullish', pct: '+0.147%', trend: 'Up', signal: 'BUY', signalText: 'RSI strength + bullish EMA, candle, and ...', decimals: 4 },
+      'BTCUSD':  { close: 64962.06, open: 64950.00, rsi: 55.95, emaFast: 64962.06, emaSlow: 64923.45, candle: 'Green', momentum: 'Neutral', pct: '+0.047%', trend: 'Up', signal: 'NEUTRAL', signalText: 'Confluence criteria not fully aligned', decimals: 2 },
+      'HUSD':    { close: 0.070218, open: 0.070250, rsi: 60.99, emaFast: 0.070218, emaSlow: 0.070045, candle: 'Red', momentum: 'Neutral', pct: '+0.078%', trend: 'Up', signal: 'NEUTRAL', signalText: 'Confluence criteria not fully aligned', decimals: 6 },
+      'ETHUSD':  { close: 1915.62, open: 1915.80, rsi: 48.05, emaFast: 1915.62, emaSlow: 1914.92, candle: 'Red', momentum: 'Neutral', pct: '-0.078%', trend: 'Up', signal: 'NEUTRAL', signalText: 'Confluence criteria not fully aligned', decimals: 2 },
+      'XRPUSD':  { close: 1.0337, open: 1.0345, rsi: 55.88, emaFast: 1.0337, emaSlow: 1.0309, candle: 'Red', momentum: 'Neutral', pct: '-0.068%', trend: 'Up', signal: 'NEUTRAL', signalText: 'Confluence criteria not fully aligned', decimals: 4 }
     };
 
     let marketData = {};
@@ -417,7 +390,6 @@
       timeframe: '15minute'
     };
 
-    /* ================= WATCHLIST CONTROLS ================= */
     function renderWatchlistChips() {
       const container = document.getElementById('watchlistContainer');
       container.innerHTML = '';
@@ -438,11 +410,7 @@
       if (e) e.preventDefault();
       const input = document.getElementById('newSymbolInput');
       const val = input.value.trim().toUpperCase();
-      if (!val) return;
-      if (watchlist.includes(val)) {
-        input.value = '';
-        return;
-      }
+      if (!val || watchlist.includes(val)) return;
       
       const seedPrice = Math.random() * 50 + 1;
       watchlist.push(val);
@@ -454,11 +422,15 @@
         emaSlow: parseFloat((seedPrice * 0.995).toFixed(4)),
         candle: 'Green',
         momentum: 'Neutral',
+        pct: '+0.010%',
         trend: 'Up',
+        signal: 'NEUTRAL',
+        signalText: 'Confluence criteria not fully aligned',
         decimals: 4
       };
       input.value = '';
       renderWatchlistChips();
+      recalculateMetrics();
       renderTable();
     }
 
@@ -467,10 +439,10 @@
       watchlist = watchlist.filter(s => s !== sym);
       delete marketData[sym];
       renderWatchlistChips();
+      recalculateMetrics();
       renderTable();
     }
 
-    /* ================= CONNECTION TOGGLE ================= */
     function toggleConnection() {
       isConnected = !isConnected;
       const btn = document.getElementById('connectBtn');
@@ -492,7 +464,6 @@
       }
     }
 
-    /* ================= SETTINGS APPLICATION ================= */
     function applySettings() {
       config.rsiPeriod = parseInt(document.getElementById('rsiPeriod').value) || 14;
       config.historyDays = parseInt(document.getElementById('historyDays').value) || 7;
@@ -509,10 +480,10 @@
       renderTable();
     }
 
-    /* ================= METRIC RECALCULATION & SIGNALS ================= */
     function recalculateMetrics() {
       let buyCount = 0;
       let sellCount = 0;
+      let neutralCount = 0;
 
       watchlist.forEach(sym => {
         const item = marketData[sym];
@@ -528,18 +499,28 @@
 
         item.trend = item.emaFast >= item.emaSlow ? 'Up' : 'Down';
 
+        // Evaluate Signals exact to Screenshot
         if (item.trend === 'Up' && item.candle === 'Green' && item.momentum === 'Bullish') {
+          item.signal = 'BUY';
+          item.signalText = 'RSI strength + bullish EMA, candle, and ...';
           buyCount++;
         } else if (item.trend === 'Down' && item.candle === 'Red' && item.momentum === 'Bearish') {
+          item.signal = 'SELL';
+          item.signalText = 'RSI weakness + bearish EMA, candle, and ...';
           sellCount++;
+        } else {
+          item.signal = 'NEUTRAL';
+          item.signalText = 'Confluence criteria not fully aligned';
+          neutralCount++;
         }
       });
 
+      document.getElementById('metricMonitored').innerText = watchlist.length;
       document.getElementById('metricBuy').innerText = buyCount;
       document.getElementById('metricSell').innerText = sellCount;
+      document.getElementById('metricNeutral').innerText = neutralCount;
     }
 
-    /* ================= TABLE RENDER ================= */
     function renderTable() {
       const tbody = document.getElementById('marketTableBody');
       tbody.innerHTML = '';
@@ -555,28 +536,42 @@
         tr.className = `transition-colors hover:bg-[#0b2036] ${isActivelyScanning ? 'bg-[#0a2745]/60 ring-1 ring-inset ring-tealAccent/30' : ''}`;
 
         const candleColor = item.candle === 'Green' ? 'text-emeraldSignal font-medium' : (item.candle === 'Red' ? 'text-roseSignal font-medium' : 'text-slate-400');
-        const momentumColor = item.momentum === 'Bullish' ? 'text-emeraldSignal' : (item.momentum === 'Bearish' ? 'text-roseSignal' : 'text-slate-400');
+        const momentumColor = item.momentum === 'Bullish' ? 'text-emeraldSignal' : (item.momentum === 'Bearish' ? 'text-roseSignal' : 'text-slate-300');
         const trendColor = item.trend === 'Up' ? 'text-textBright' : 'text-slate-400';
 
+        // Exact Signal Badges
+        let signalBadge = '';
+        if (item.signal === 'BUY') {
+          signalBadge = `<span class="inline-block px-4 py-1 text-xs font-bold rounded-md bg-[#0e3b38] text-tealAccent border border-tealAccent/40">BUY</span>`;
+        } else if (item.signal === 'SELL') {
+          signalBadge = `<span class="inline-block px-4 py-1 text-xs font-bold rounded-md bg-[#3b0e1a] text-roseSignal border border-roseSignal/40">SELL</span>`;
+        } else {
+          signalBadge = `<span class="inline-block px-3 py-1 text-xs font-bold rounded-md bg-[#0f2338] text-slate-300 border border-slate-700">NEUTRAL</span>`;
+        }
+
         tr.innerHTML = `
-          <td class="py-3 px-4 font-bold text-white flex items-center space-x-2">
+          <td class="py-4 px-4 font-bold text-white flex items-center space-x-2">
             <span class="w-1.5 h-1.5 rounded-full ${isActivelyScanning ? 'bg-tealAccent animate-ping' : 'bg-tealAccent'}"></span>
             <span>${sym}</span>
           </td>
-          <td class="py-3 px-3 text-textBright">${item.close.toFixed(item.decimals)}</td>
-          <td class="py-3 px-3 text-textDim">${item.open.toFixed(item.decimals)}</td>
-          <td class="py-3 px-3 text-textBright font-semibold">${item.rsi.toFixed(2)}</td>
-          <td class="py-3 px-3 text-textDim">${item.emaFast.toFixed(item.decimals)}</td>
-          <td class="py-3 px-3 text-textDim">${item.emaSlow.toFixed(item.decimals)}</td>
-          <td class="py-3 px-3 ${candleColor}">${item.candle}</td>
-          <td class="py-3 px-3 ${momentumColor}">${item.momentum}</td>
-          <td class="py-3 px-3 ${trendColor}">${item.trend}</td>
+          <td class="py-4 px-3 text-textBright font-semibold">${item.rsi.toFixed(2)}</td>
+          <td class="py-4 px-3 text-textDim">${item.emaFast.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 4})}</td>
+          <td class="py-4 px-3 text-textDim">${item.emaSlow.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 4})}</td>
+          <td class="py-4 px-3 ${candleColor}">${item.candle}</td>
+          <td class="py-4 px-3">
+            <div class="${momentumColor} font-semibold">${item.momentum}</div>
+            <div class="text-[10px] text-textDim">${item.pct}</div>
+          </td>
+          <td class="py-4 px-3 ${trendColor}">${item.trend}</td>
+          <td class="py-4 px-4">
+            <div>${signalBadge}</div>
+            <div class="text-[10px] text-textDim mt-1 font-sans">${item.signalText}</div>
+          </td>
         `;
         tbody.appendChild(tr);
       });
     }
 
-    /* ================= CONTINUOUS LOW-LATENCY ENGINE ================= */
     async function runScanCycle() {
       if (!isScanning || watchlist.length === 0) return;
 
@@ -601,7 +596,6 @@
             }
           }
         } catch (err) {
-          // Micro-tick simulation fallback if browser blocks CORS
           const deltaPct = (Math.random() - 0.495) * 0.0028;
           newClose = Math.max(0.0001, item.close * (1 + deltaPct));
         }
@@ -618,8 +612,10 @@
         let newRsi = item.rsi + (deltaPct > 0 ? Math.random() * 1.5 : -Math.random() * 1.5);
         newRsi = Math.min(95, Math.max(5, newRsi));
 
-        const wasBuy = (item.trend === 'Up' && item.candle === 'Green' && item.momentum === 'Bullish');
-        const wasSell = (item.trend === 'Down' && item.candle === 'Red' && item.momentum === 'Bearish');
+        const pctChange = ((newClose - newOpen) / newOpen * 100);
+        const pctStr = (pctChange >= 0 ? '+' : '') + pctChange.toFixed(3) + '%';
+
+        const prevSignal = item.signal;
 
         item.close = newClose;
         item.open = newOpen;
@@ -627,14 +623,12 @@
         item.emaFast = newEmaFast;
         item.emaSlow = newEmaSlow;
         item.candle = newCandle;
+        item.pct = pctStr;
 
         recalculateMetrics();
 
-        const isNowBuy = (item.trend === 'Up' && item.candle === 'Green' && item.momentum === 'Bullish');
-        const isNowSell = (item.trend === 'Down' && item.candle === 'Red' && item.momentum === 'Bearish');
-
-        if (!wasBuy && isNowBuy) soundEngine.playBuyChime();
-        if (!wasSell && isNowSell) soundEngine.playSellChime();
+        if (prevSignal !== 'BUY' && item.signal === 'BUY') soundEngine.playBuyChime();
+        if (prevSignal !== 'SELL' && item.signal === 'SELL') soundEngine.playSellChime();
       }
 
       renderTable();
@@ -647,7 +641,6 @@
       document.getElementById('stopScanBtn').className = 'py-2 rounded font-bold text-xs flex items-center justify-center space-x-1.5 border border-borderDark bg-[#030d18] text-slate-400 hover:bg-cardBg transition';
       document.getElementById('scanBeaconPing').classList.remove('hidden');
       document.getElementById('scanStatusText').innerHTML = `Scanning <span id="currentScanningSym" class="text-tealAccent font-bold">${watchlist[scanIndex]}...</span>`;
-      
       scanTimer = setInterval(runScanCycle, 1800);
     }
 
